@@ -27,15 +27,6 @@ func main() {
 		}
 	}
 
-	router := mux.NewRouter()
-	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("Wecome to the URL Shortener API"))
-	}).Methods(http.MethodGet)
-
-	router.HandleFunc("/create-short-url", handler.CreateShortUrl).Methods(http.MethodPost)
-	router.HandleFunc("/{shortUrl}", handler.HandleShortUrlRedirect).Methods(http.MethodGet)
-
 	addr := os.Getenv("REDIS_ADDR")
 	password := os.Getenv("REDIS_PASSWORD")
 	db, err := strconv.Atoi(os.Getenv("REDIS_DB"))
@@ -43,6 +34,14 @@ func main() {
 		log.Fatalf("failed to get redis db index: %v", err)
 	}
 	store.InitializeStore(addr, password, db)
+
+	router := mux.NewRouter()
+	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("Wecome to the URL Shortener API"))
+	}).Methods(http.MethodGet)
+	router.HandleFunc("/create-short-url", handler.CreateShortUrl).Methods(http.MethodPost)
+	router.HandleFunc("/{shortUrl}", handler.HandleShortUrlRedirect).Methods(http.MethodGet)
 
 	srv := &http.Server{
 		Addr:         "0.0.0.0:" + os.Getenv("SERVER_PORT"),
