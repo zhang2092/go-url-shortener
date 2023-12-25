@@ -128,6 +128,7 @@ func main() {
 	defer cancel()
 
 	service.CloseStoreRedisConn()
+	conn.Close()
 
 	srv.Shutdown(ctx)
 	log.Println("shutting down")
