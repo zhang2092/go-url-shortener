@@ -68,12 +68,12 @@ func DeleteShortUrl(store db.Store) http.HandlerFunc {
 			Status:   -1,
 		})
 		if err != nil {
-			respond(w, "删除错误", nil, http.StatusOK)
+			RespondErr(w, "删除错误", nil)
 			return
 		}
 		err = service.DeleteShortUrl(shorUrl)
 		if err != nil {
-			respond(w, "删除错误", nil, http.StatusOK)
+			RespondErr(w, "删除错误", nil)
 			return
 		}
 

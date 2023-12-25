@@ -33,3 +33,23 @@ func respond(w http.ResponseWriter, message string, v any, statusCode int) {
 		log.Printf("could not write http response: %v\n", err)
 	}
 }
+
+func RespondErr(w http.ResponseWriter, message string, v any) {
+	rsp := response{
+		Success: false,
+		Message: message,
+		Data:    v,
+	}
+	b, err := json.Marshal(rsp)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(http.StatusInternalServerError)
+	_, err = w.Write(b)
+	if err != nil && !errors.Is(err, context.Canceled) {
+		log.Printf("could not write http response: %v\n", err)
+	}
+}
