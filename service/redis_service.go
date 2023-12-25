@@ -52,3 +52,7 @@ func RetrieveInitialUrl(shortUrl string) (string, error) {
 
 	return result, nil
 }
+
+func DeleteShortUrl(shortUrl string) error {
+	return storeService.redisClient.Set(ctx, shortUrl, "", time.Second).Err()
+}

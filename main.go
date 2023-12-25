@@ -99,13 +99,12 @@ func main() {
 
 	subRouter := router.PathPrefix("/").Subrouter()
 	subRouter.Use(handler.MyAuthorize)
-
 	subRouter.Handle("/", handler.HomeView(templates, store)).Methods(http.MethodGet)
-
 	subRouter.Handle("/create-short-url", hds.MethodHandler{
 		http.MethodGet:  http.Handler(handler.CreateShortUrlView(templates)),
 		http.MethodPost: http.Handler(handler.CreateShortUrl(templates, store)),
 	})
+	subRouter.Handle("/delete-short-url/{shortUrl}", handler.DeleteShortUrl(store)).Methods(http.MethodPost)
 
 	router.HandleFunc("/{shortUrl}", handler.HandleShortUrlRedirect).Methods(http.MethodGet)
 

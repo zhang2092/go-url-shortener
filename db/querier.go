@@ -17,6 +17,7 @@ type Querier interface {
 	GetUserByName(ctx context.Context, username string) (*User, error)
 	ListUrlByUser(ctx context.Context, userID string) ([]*UserRelateUrl, error)
 	ListUsers(ctx context.Context, arg *ListUsersParams) ([]*User, error)
+	UpdateStatus(ctx context.Context, arg *UpdateStatusParams) (*UserRelateUrl, error)
 	UpdateUser(ctx context.Context, arg *UpdateUserParams) (*User, error)
 }
 

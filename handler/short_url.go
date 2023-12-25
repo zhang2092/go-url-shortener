@@ -59,6 +59,28 @@ func CreateShortUrl(templates fs.FS, store db.Store) http.HandlerFunc {
 	}
 }
 
+func DeleteShortUrl(store db.Store) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		shorUrl := vars["shortUrl"]
+		_, err := store.UpdateStatus(r.Context(), &db.UpdateStatusParams{
+			ShortUrl: shorUrl,
+			Status:   -1,
+		})
+		if err != nil {
+			respond(w, "删除错误", nil, http.StatusOK)
+			return
+		}
+		err = service.DeleteShortUrl(shorUrl)
+		if err != nil {
+			respond(w, "删除错误", nil, http.StatusOK)
+			return
+		}
+
+		respond(w, "删除成功", nil, http.StatusOK)
+	}
+}
+
 func HandleShortUrlRedirect(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	shorUrl := vars["shortUrl"]

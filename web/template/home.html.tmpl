@@ -13,7 +13,7 @@
             {{range .}}
             <tr>
                 <td width="600px">{{.OriginUrl}}</td>
-                <td width="320px"><a target="_blank" href="{{.ShortUrl}}">{{.ShortUrl}}</a></td>
+                <td width="320px"><a target="_blank" href="{{genShortUrl .ShortUrl}}">{{genShortUrl .ShortUrl}}</a></td>
                 <td width="80px">
                     {{if eq .Status 0}}
                     <code>YES</code>
@@ -21,10 +21,15 @@
                     <code>NO</code>
                     {{end}}
                 </td>
-                <td width="80px">delete</td>
+                <td width="80px">
+                    {{if eq .Status 0}}
+                    <button data-short-url="{{.ShortUrl}}" class="btn btn-danger deleteShortUrl">删除</button>
+                    {{end}}
+                </td>
             </tr>
             {{end}}
         </table>
+        {{ csrfField }}
     </div>
 </div>
 
@@ -51,6 +56,28 @@
 {{end}}
 {{define "js"}}
 <script>
+    $('.deleteShortUrl').click(function () {
+        let csrfToken = $('input[name="csrf_token"]').val()
+        let u = $(this).attr('data-short-url')
+        $.ajax({
+            url: '/delete-short-url/' + u,
+            type: 'POST',
+            cache: false,
+            processData: false,
+            contentType: false,
+            headers: {
+                "X-CSRF-Token": csrfToken
+            },
+            success: function (res) {
+                if (res.success) {
+                    alert('删除成功');
+                    window.location.reload();
+                } else {
+                    alert('删除失败');
+                }
+            }
+        })
+    });
 </script>
 {{end}}
 {{template "footer" .}}

@@ -6,6 +6,12 @@ INSERT INTO user_relate_url (
 )
 RETURNING *;
 
+-- name: UpdateStatus :one
+UPDATE user_relate_url
+SET status = $2
+WHERE short_url = $1
+RETURNING *;
+
 -- name: ListUrlByUser :many
 SELECT *
 FROM user_relate_url

@@ -83,3 +83,30 @@ func (q *Queries) ListUrlByUser(ctx context.Context, userID string) ([]*UserRela
 	}
 	return items, nil
 }
+
+const updateStatus = `-- name: UpdateStatus :one
+UPDATE user_relate_url
+SET status = $2
+WHERE short_url = $1
+RETURNING id, user_id, short_url, origin_url, status, expire_at, created_at
+`
+
+type UpdateStatusParams struct {
+	ShortUrl string `json:"short_url"`
+	Status   int32  `json:"status"`
+}
+
+func (q *Queries) UpdateStatus(ctx context.Context, arg *UpdateStatusParams) (*UserRelateUrl, error) {
+	row := q.db.QueryRowContext(ctx, updateStatus, arg.ShortUrl, arg.Status)
+	var i UserRelateUrl
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.ShortUrl,
+		&i.OriginUrl,
+		&i.Status,
+		&i.ExpireAt,
+		&i.CreatedAt,
+	)
+	return &i, err
+}

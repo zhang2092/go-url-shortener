@@ -20,6 +20,13 @@ func renderLayout(w http.ResponseWriter, r *http.Request, templates fs.FS, data 
 		"currentUser": func() *Authorize {
 			return withUser(r.Context())
 		},
+		"genShortUrl": func(url string) string {
+			scheme := "http://"
+			if r.TLS != nil {
+				scheme = "https://"
+			}
+			return scheme + r.Host + "/" + url
+		},
 	})
 
 	tpl := template.Must(t.Clone())

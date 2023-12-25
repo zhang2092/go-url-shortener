@@ -15,14 +15,6 @@ func HomeView(templates fs.FS, store db.Store) http.HandlerFunc {
 		if err != nil {
 			renderLayout(w, r, templates, nil, "home.html.tmpl")
 		}
-
-		scheme := "http://"
-		if r.TLS != nil {
-			scheme = "https://"
-		}
-		for _, item := range result {
-			item.ShortUrl = scheme + r.Host + "/" + item.ShortUrl
-		}
 		renderLayout(w, r, templates, result, "home.html.tmpl")
 	}
 }
