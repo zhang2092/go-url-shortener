@@ -69,6 +69,10 @@ func HandleShortUrlRedirect(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "failed to get url", http.StatusInternalServerError)
 		return
 	}
+	if len(link) == 0 {
+		http.Error(w, "short url get to long url is empty", http.StatusInternalServerError)
+		return
+	}
 
 	http.Redirect(w, r, link, http.StatusFound)
 }
