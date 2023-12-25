@@ -1,0 +1,42 @@
+{{template "header" .}}
+<div class="container">
+    <div class="flex flex-column align-items row py-md-5 mt-md-5">
+        <h1>登录</h1>
+        <div class="col-sm-4 py-md-5">
+            <form action="/login" method="post">
+                {{ csrfField }}
+                <div class="form-group">
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">邮箱</span>
+                        </div>
+                        <input type="email" name="email" class="form-control" required id="email" value="{{.Email}}"
+                            aria-describedby="emailValid">
+                    </div>
+                    {{if .EmailMsg}}
+                    <small id="emailValid" style="color: #f44336;" class="form-text">{{.EmailMsg}}</small>
+                    {{end}}
+                </div>
+                <div class="form-group">
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">密码</span>
+                        </div>
+                        <input type="password" name="password" class="form-control" required id="password"
+                            value="{{.Password}}" aria-describedby="passwordValid">
+                    </div>
+                    {{if .PasswordMsg}}
+                    <small id="passwordValid" style="color: #f44336;" class="form-text">{{.PasswordMsg}}</small>
+                    {{end}}
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">提交</button>
+            </form>
+            {{if .Summary}}
+            <div class="py-md-5" style="color: #f44336;">
+                {{.Summary}}
+            </div>
+            {{end}}
+        </div>
+    </div>
+</div>
+{{template "footer" .}}

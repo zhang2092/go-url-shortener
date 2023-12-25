@@ -2,7 +2,10 @@ package main
 
 import (
 	"context"
+	"database/sql"
+	"embed"
 	"flag"
+	"io/fs"
 	"log"
 	"net/http"
 	"os"
@@ -10,11 +13,22 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/gorilla/csrf"
+	hds "github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
+	"github.com/gorilla/securecookie"
 	"github.com/joho/godotenv"
+	"github.com/zhang2092/go-url-shortener/db"
 	"github.com/zhang2092/go-url-shortener/handler"
-	"github.com/zhang2092/go-url-shortener/store"
+	"github.com/zhang2092/go-url-shortener/pkg/logger"
+	"github.com/zhang2092/go-url-shortener/service"
 )
+
+//go:embed web/template
+var templateFS embed.FS
+
+//go:embed web/static
+var staticFS embed.FS
 
 func main() {
 	var local bool
@@ -27,20 +41,72 @@ func main() {
 		}
 	}
 
+	logger.NewLogger()
+
+	// Set up templates
+	templates, err := fs.Sub(templateFS, "web/template")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Set up statics
+	statics, err := fs.Sub(staticFS, "web/static")
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	addr := os.Getenv("REDIS_ADDR")
 	password := os.Getenv("REDIS_PASSWORD")
-	db, err := strconv.Atoi(os.Getenv("REDIS_DB"))
+	redisDb, err := strconv.Atoi(os.Getenv("REDIS_DB"))
 	if err != nil {
 		log.Fatalf("failed to get redis db index: %v", err)
 	}
-	store.InitializeStore(addr, password, db)
+	service.InitializeStore(addr, password, redisDb)
+
+	conn, err := sql.Open(os.Getenv("DB_DRIVER"), os.Getenv("DB_SOURCE"))
+	if err != nil {
+		log.Fatal("cannot connect to db: ", err)
+	}
+	store := db.NewStore(conn)
+
+	hashKey := securecookie.GenerateRandomKey(32)
+	blockKey := securecookie.GenerateRandomKey(32)
+	handler.SetSecureCookie(securecookie.New(hashKey, blockKey))
 
 	router := mux.NewRouter()
-	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("Wecome to the URL Shortener API"))
-	}).Methods(http.MethodGet)
-	router.HandleFunc("/create-short-url", handler.CreateShortUrl).Methods(http.MethodPost)
+	router.Use(mux.CORSMethodMiddleware(router))
+	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.FS(statics))))
+
+	csrfMiddleware := csrf.Protect(
+		[]byte(securecookie.GenerateRandomKey(32)),
+		csrf.Secure(false),
+		csrf.HttpOnly(true),
+		csrf.FieldName("csrf_token"),
+		csrf.CookieName("authorize_csrf"),
+	)
+	router.Use(csrfMiddleware)
+	router.Use(handler.SetUser)
+
+	router.Handle("/register", hds.MethodHandler{
+		http.MethodGet:  http.Handler(handler.RegisterView(templates)),
+		http.MethodPost: http.Handler(handler.Register(templates, store)),
+	})
+	router.Handle("/login", hds.MethodHandler{
+		http.MethodGet:  http.Handler(handler.LoginView(templates)),
+		http.MethodPost: http.Handler(handler.Login(templates, store)),
+	})
+	router.Handle("/logout", handler.Logout(templates)).Methods(http.MethodGet)
+
+	subRouter := router.PathPrefix("/").Subrouter()
+	subRouter.Use(handler.MyAuthorize)
+
+	subRouter.Handle("/", handler.HomeView(templates, store)).Methods(http.MethodGet)
+
+	subRouter.Handle("/create-short-url", hds.MethodHandler{
+		http.MethodGet:  http.Handler(handler.CreateShortUrlView(templates)),
+		http.MethodPost: http.Handler(handler.CreateShortUrl(templates, store)),
+	})
+
 	router.HandleFunc("/{shortUrl}", handler.HandleShortUrlRedirect).Methods(http.MethodGet)
 
 	srv := &http.Server{
@@ -62,7 +128,7 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	store.CloseStoreRedisConn()
+	service.CloseStoreRedisConn()
 
 	srv.Shutdown(ctx)
 	log.Println("shutting down")

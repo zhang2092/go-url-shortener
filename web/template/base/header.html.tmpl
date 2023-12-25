@@ -1,0 +1,44 @@
+{{define "header"}}
+<!doctype html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="shortcut icon" href="/statics/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/static/css/index.css" />
+    {{block "css" .}}{{end}}
+    <title>URL段地址服务</title>
+</head>
+
+<body>
+    <div class="wrapper">
+        <nav class="navbar navbar-light bg-light navbar-wh">
+            <a class="navbar-brand navbar-brand-fs" href="/">
+                URL段地址服务
+            </a>
+            <ul class="flex oauth">
+                {{if currentUser}}
+                <li style="font-size: 12px;">
+                    欢迎您: {{ currentUser.Name }}
+                </li>
+                <li style="font-size: 12px;">
+                    <a href="/logout" class="btn btn-primary btn-sm">退出</a>
+                </li>
+                {{else}}
+                <li>
+                    <a href="/login" class="btn btn-outline-primary btn-sm">登录</a>
+                </li>
+                <li>
+                    <a href="/register" class="btn btn-primary btn-sm">注册</a>
+                </li>
+                {{end}}
+            </ul>
+        </nav>
+        {{end}}
+        <!-- </div>
+    <script src="/statics/js/jquery.slim.min.js"></script>
+    <script src="/statics/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html> -->

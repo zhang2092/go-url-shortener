@@ -1,0 +1,25 @@
+{{template "header" .}}
+<div class="container">
+    <div class="flex flex-column align-items row py-md-5 mt-md-5">
+        <h1>创建短路径</h1>
+        <div class="col-sm-4 py-md-5">
+            <form action="/create-short-url" method="post">
+                {{ csrfField }}
+                <div class="form-group">
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">原路径</span>
+                        </div>
+                        <input type="text" name="long_url" class="form-control" required id="long_url">
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">创建</button>
+            </form>
+            {{if .}}
+            <div class="py-md-5" style="color: #f44336;">
+            </div>
+            {{end}}
+        </div>
+    </div>
+</div>
+{{template "footer" .}}

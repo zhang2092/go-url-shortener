@@ -15,7 +15,8 @@ func sha256Of(input string) []byte {
 }
 
 func base58Encoded(bytes []byte) (string, error) {
-	encoded, err := base58.BitcoinEncoding.Encode(bytes)
+	encoding := base58.BitcoinEncoding
+	encoded, err := encoding.Encode(bytes)
 	if err != nil {
 		return "", err
 	}
@@ -31,5 +32,5 @@ func GenerateShortLink(originUrl string, userId string) (string, error) {
 		return "", err
 	}
 
-	return result, nil
+	return result[:8], nil
 }

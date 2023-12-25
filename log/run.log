@@ -1,0 +1,6 @@
+2023-12-25T15:32:56.864+0800	ERROR	handler/render.go:28	template parse: user/login.html.tmpl, template: header.html.tmpl:22: function "currentUser" not defined
+2023-12-25T15:32:57.541+0800	ERROR	handler/render.go:28	template parse: user/login.html.tmpl, template: header.html.tmpl:22: function "currentUser" not defined
+2023-12-25T15:33:21.637+0800	ERROR	handler/render.go:28	template parse: user/login.html.tmpl, template: header.html.tmpl:22: function "currentUser" not defined
+2023-12-25T15:33:56.806+0800	ERROR	handler/render.go:28	template parse: user/register.html.tmpl, template: header.html.tmpl:22: function "currentUser" not defined
+2023-12-25T15:34:12.152+0800	ERROR	handler/render.go:28	template parse: user/login.html.tmpl, template: header.html.tmpl:22: function "currentUser" not defined
+2023-12-25T15:34:59.057+0800	ERROR	handler/render.go:31	template parse: user/register.html.tmpl, template: header.html.tmpl:22: function "currentUser" not defined

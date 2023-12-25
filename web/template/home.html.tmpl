@@ -1,0 +1,56 @@
+{{template "header" .}}
+<div class="container-fluid flex justify-content">
+    <div class="main">
+        <h3 style="margin-top: 20px;margin-bottom: 10px;">短地址列表 <a class="btn btn-primary"
+                href="/create-short-url">添加</a></h3>
+        <table class="my_table" style="display: block;">
+            <tr>
+                <th width="600px">原地址</th>
+                <th width="320px">短地址</th>
+                <th width="80px">是否有效</th>
+                <th width="80px">删除</th>
+            </tr>
+            {{range .}}
+            <tr>
+                <td width="600px">{{.OriginUrl}}</td>
+                <td width="320px"><a target="_blank" href="{{.ShortUrl}}">{{.ShortUrl}}</a></td>
+                <td width="80px">
+                    {{if eq .Status 0}}
+                    <code>YES</code>
+                    {{else}}
+                    <code>NO</code>
+                    {{end}}
+                </td>
+                <td width="80px">delete</td>
+            </tr>
+            {{end}}
+        </table>
+    </div>
+</div>
+
+{{define "css"}}
+<style>
+    .my_table {
+        display: block;
+        max-width: 1280px;
+    }
+
+    .my_table tr {
+        display: inline-block;
+        width: 100%;
+        border: 1px solid #eee;
+        border-collapse: collapse;
+    }
+
+    .my_table tr td {
+        display: inline-block;
+        word-wrap: break-word;
+        padding: 2px 5px;
+    }
+</style>
+{{end}}
+{{define "js"}}
+<script>
+</script>
+{{end}}
+{{template "footer" .}}
