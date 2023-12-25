@@ -20,11 +20,11 @@ var (
 
 const CacheDuration = 6 * time.Hour
 
-func InitializeStore() {
+func InitializeStore(addr string, password string, db int) {
 	redisClient := redis.NewClient(&redis.Options{
-		Addr:     "localhost:6378",
-		Password: "secret",
-		DB:       0,
+		Addr:     addr,
+		Password: password,
+		DB:       db,
 	})
 
 	pong, err := redisClient.Ping(ctx).Result()
