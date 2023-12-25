@@ -31,5 +31,5 @@ func GenerateShortLink(originUrl string, userId string) (string, error) {
 		return "", err
 	}
 
-	return result, nil
+	return result[:8], nil
 }
