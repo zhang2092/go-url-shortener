@@ -1,0 +1,42 @@
+version: '3.4'
+
+services:
+
+  url-short-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: url-short
+    restart: always
+    environment:
+      SERVER_PORT: "9090"
+      REDIS_ADDR: "redis:6379"
+      REDIS_PASSWORD: "hPxyR4"
+      REDIS_DB: "2"
+    networks:
+      - url-short-network
+    ports:
+      - "9090:9090"
+    depends_on:
+      - redis
+
+  redis:
+    image: 'redis:7.2.3'
+    container_name: 'redis'
+    restart: always
+    networks:
+      - url-short-network
+    volumes:
+      - redis-db:/data:rw
+    ports:
+     - 6379:6379
+    command:
+      --requirepass "hPxyR4" #这一行是设置密码
+    privileged: true      #使用该参数，container内的root拥有真正的root权限
+
+networks:
+  url-short-network:
+    driver: bridge
+
+volumes:
+  redis-db: {}

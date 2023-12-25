@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"flag"
 	"log"
 	"net/http"
 	"os"
@@ -16,9 +17,14 @@ import (
 )
 
 func main() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatalf("failed to load env: %v", err)
+	var local bool
+	flag.BoolVar(&local, "debug", true, "server running in debug?")
+	flag.Parse()
+
+	if local {
+		if err := godotenv.Load(); err != nil {
+			log.Fatalf("failed to load env: %v", err)
+		}
 	}
 
 	router := mux.NewRouter()
